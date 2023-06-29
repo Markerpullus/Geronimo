@@ -4,17 +4,19 @@ Serial myPort;        // The serial port
 int xPos = 1;         // horizontal position of the graph
 float inByte = 0;
 
-float topLeftLat = 39.874980;
-float topLeftLong = -86.102092;
-float botRightLat = 39.874584;
-float botRightLong = -86.101650;
+double topLeftLat = 39.874980;
+double topLeftLong = -86.102092;
+double botRightLat = 39.874584;
+double botRightLong = -86.101650;
+
+double x, y;
 
 PImage img;
 
 void setup () {
   // set the window size:
   size(660, 769);
-  img = loadImage();
+  img = loadImage("satellite.png");
 
   // List all the available serial ports
   // if using Processing 2.1 or later, use Serial.printArray()
@@ -23,7 +25,7 @@ void setup () {
   // I know that the first port in the serial list on my Mac is always my
   // Arduino, so I open Serial.list()[0].
   // Open whatever port is the one you're using.
-  myPort = new Serial(this, Serial.list()[0], 115200);
+  myPort = new Serial(this, Serial.list()[0], 9600);
 
   // don't generate a serialEvent() unless you get a newline character:
   myPort.bufferUntil('\n');
@@ -33,16 +35,38 @@ void setup () {
 }
 
 void draw () {
-  // draw the line:
+  image(img, 0, 0);
+  circle((float)x, (float)y, 10);
 }
 
+int line = 0;
 void serialEvent (Serial myPort) {
   // get the ASCII string:
   String inString = myPort.readStringUntil('\n');
 
-  if (inString != null) {
+  if (inString != null && line > 1) {
     // trim off any whitespace:
     inString = trim(inString);
-    println(inString);
+    String[] coords = inString.split(", ");
+    double lat = convert(Double.parseDouble(coords[0]));
+    double lon = convert(Double.parseDouble(coords[1]));
+    x = (lon - topLeftLong) / (botRightLong - topLeftLong) * 660;
+    y = (lat - topLeftLat) / (botRightLat - topLeftLat) * 769;
   }
+  line ++;
+}
+
+double convert (double coord) {
+  double result;
+  int a;
+  if (coord > 0) {
+    a = floor((float)coord / 100);
+  } else {
+    a = ceil((float)coord / 100);
+  }
+  
+  double b = (coord - a * 100) / 60;
+  result = a + b;
+  
+  return result;
 }
