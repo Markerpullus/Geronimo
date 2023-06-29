@@ -32,12 +32,11 @@ void setup()
 
   // connect at 115200 so we can read the GPS fast enough and echo without dropping chars
   // also spit it out
-  Serial.begin(115200);
-  delay(5000);
-  Serial.println("Adafruit GPS library basic parsing test!");
+  Serial.begin(9600);
+  //Serial.println("Adafruit GPS library basic parsing test!");
 
   // 9600 NMEA is the default baud rate for Adafruit MTK GPS's- some use 4800
-  GPS.begin(38400);
+  GPS.begin(9600);
 
   // uncomment this line to turn on RMC (recommended minimum) and GGA (fix data) including altitude
   GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
@@ -47,7 +46,7 @@ void setup()
   // the parser doesn't care about other sentences at this time
 
   // Set the update rate
-  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_5HZ);   // 1 Hz update rate
+  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);   // 1 Hz update rate
   // For the parsing code to work nicely and have time to sort thru the data, and
   // print it out we don't suggest using anything higher than 1 Hz
 
@@ -80,9 +79,9 @@ void loop()                     // run over and over again
   }
 
   // approximately every 2 seconds or so, print out the current stats
-  if (millis() - timer > 2000) {
+  if (millis() - timer > 500) {
     timer = millis(); // reset the timer
-
+    /*
     Serial.print("\nTime: ");
     if (GPS.hour < 10) { Serial.print('0'); }
     Serial.print(GPS.hour, DEC); Serial.print(':');
@@ -101,18 +100,20 @@ void loop()                     // run over and over again
     Serial.print(GPS.month, DEC); Serial.print("/20");
     Serial.println(GPS.year, DEC);
     Serial.print("Fix: "); Serial.print((int)GPS.fix);
-    Serial.print(" quality: "); Serial.println((int)GPS.fixquality);
+    Serial.print(" quality: "); Serial.println((int)GPS.fixquality);*/
     if (GPS.fix) {
-      Serial.print("Location: ");
-      Serial.print(GPS.latitude, 5); Serial.print(GPS.lat);
+      //Serial.print("Location: ");
+      if (GPS.lat == 'S') Serial.print("-");
+      Serial.print(GPS.latitude, 5);
       Serial.print(", ");
-      Serial.print(GPS.longitude, 5); Serial.println(GPS.lon);
-
+      if (GPS.lon == 'W') Serial.print("-");
+      Serial.println(GPS.longitude, 5);
+      /*
       Serial.print("Speed (knots): "); Serial.println(GPS.speed);
       Serial.print("Angle: "); Serial.println(GPS.angle);
       Serial.print("Altitude: "); Serial.println(GPS.altitude);
       Serial.print("Satellites: "); Serial.println((int)GPS.satellites);
-      Serial.print("Antenna status: "); Serial.println((int)GPS.antenna);
+      Serial.print("Antenna status: "); Serial.println((int)GPS.antenna);*/
     }
   }
 }
