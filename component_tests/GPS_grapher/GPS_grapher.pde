@@ -25,7 +25,7 @@ void setup () {
   // I know that the first port in the serial list on my Mac is always my
   // Arduino, so I open Serial.list()[0].
   // Open whatever port is the one you're using.
-  myPort = new Serial(this, Serial.list()[0], 9600);
+  myPort = new Serial(this, Serial.list()[2], 115200);
 
   // don't generate a serialEvent() unless you get a newline character:
   myPort.bufferUntil('\n');
@@ -48,8 +48,10 @@ void serialEvent (Serial myPort) {
     // trim off any whitespace:
     inString = trim(inString);
     String[] coords = inString.split(", ");
-    double lat = convert(Double.parseDouble(coords[0]));
-    double lon = convert(Double.parseDouble(coords[1]));
+    double lat = Double.parseDouble(coords[0]);
+    double lon = Double.parseDouble(coords[1]);
+    println(lat);
+    println(lon);
     x = (lon - topLeftLong) / (botRightLong - topLeftLong) * 660;
     y = (lat - topLeftLat) / (botRightLat - topLeftLat) * 769;
   }
